@@ -132,6 +132,24 @@
   --sidebar-ring: oklch(0.551 0.027 264.364);
 }
 
+:root {
+  --imessage-blue: oklch(0.66 0.18 255);
+  --imessage-green: oklch(0.75 0.18 150);
+  --imessage-gray: oklch(0.92 0.005 250);
+  --imessage-gray-dark: oklch(0.27 0.005 250);
+  --warning: oklch(0.8 0.15 70);
+  --warning-foreground: oklch(0.2 0.02 60);
+}
+
+@theme inline {
+  --color-imessage-blue: var(--imessage-blue);
+  --color-imessage-green: var(--imessage-green);
+  --color-imessage-gray: var(--imessage-gray);
+  --color-imessage-gray-dark: var(--imessage-gray-dark);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+}
+
 @layer base {
   * {
     border-color: var(--color-border);
