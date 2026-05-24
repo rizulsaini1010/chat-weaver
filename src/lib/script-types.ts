@@ -71,4 +71,7 @@ export interface Settings {
   customVoices: VoicePreset[];
   // SFX library
   sfxLibrary: { name: string; dataUrl?: string }[];
+  // Render backend
+  backendUrl: string;
 }
+
