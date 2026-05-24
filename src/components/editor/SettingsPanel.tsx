@@ -130,8 +130,23 @@ export function SettingsPanel({ settings, setSettings }: Props) {
         <Slid label={`Padding (${settings.silencePaddingMs} ms)`} v={settings.silencePaddingMs} min={0} max={500} step={10} onChange={(n) => update("silencePaddingMs", n)} />
       </Section>
 
+      <Section title="Render backend">
+        <Row label="Server URL">
+          <Input
+            value={settings.backendUrl}
+            onChange={(e) => update("backendUrl", e.target.value)}
+            placeholder="http://localhost:8787"
+            className="h-9"
+          />
+        </Row>
+        <p className="text-[10px] text-muted-foreground">
+          Run <code>cd cyno-server &amp;&amp; npm install &amp;&amp; npm start</code> on your machine, then click Render in the header.
+        </p>
+      </Section>
+
       <CustomVoicesPanel settings={settings} setSettings={setSettings} />
       <SfxPanel settings={settings} setSettings={setSettings} />
+
     </div>
   );
 }
