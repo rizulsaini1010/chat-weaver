@@ -25,6 +25,8 @@ export const defaultSettings: Settings = {
   defaultThemVoice: "",
   customVoices: [],
   sfxLibrary: [],
+  backendUrl: "http://localhost:8787",
+
 };
 
 

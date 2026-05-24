@@ -9,8 +9,9 @@ import {
   Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger,
 } from "@/components/ui/sheet";
 import {
-  Download, FileCode, MessageSquare, Settings as SettingsIcon, Upload,
+  Download, FileCode, Loader2, MessageSquare, Play, Settings as SettingsIcon, Upload,
 } from "lucide-react";
+
 import {
   defaultSettings, loadState, saveState,
 } from "@/lib/store";
@@ -37,6 +38,8 @@ function App() {
   const [activeId, setActiveId] = useState<string>("");
   const [rawDirty, setRawDirty] = useState(false);
   const [rawText, setRawText] = useState("");
+  const [rendering, setRendering] = useState(false);
+
 
   // load
   useEffect(() => {
@@ -103,6 +106,60 @@ function App() {
     URL.revokeObjectURL(url);
   };
 
+  const collectAssets = (): Record<string, string> => {
+    const out: Record<string, string> = {};
+    for (const c of contacts) {
+      if (c.avatar && c.avatar.startsWith("data:")) out[`${c.id}_avatar`] = c.avatar;
+      for (const b of c.bubbles) {
+        if (b.imageName && (b as unknown as { imageData?: string }).imageData?.startsWith("data:")) {
+          out[b.imageName] = (b as unknown as { imageData: string }).imageData;
+        }
+      }
+    }
+    for (const s of settings.sfxLibrary) {
+      if (s.dataUrl) out[`${s.name}.mp3`] = s.dataUrl;
+    }
+    return out;
+  };
+
+  const render = async () => {
+    if (rendering) return;
+    const url = (settings.backendUrl || "").replace(/\/$/, "");
+    if (!url) { toast.error("Set the render backend URL in Settings"); return; }
+    setRendering(true);
+    const t = toast.loading("Rendering video — this can take a while…");
+    try {
+      const apiKey = settings.ttsProvider === "elevenlabs" ? settings.elevenlabsApiKey : settings.ai33proApiKey;
+      const res = await fetch(`${url}/render`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          script: serializeScript(contacts, settings),
+          settings,
+          assets: collectAssets(),
+          apiKey,
+          ttsProvider: settings.ttsProvider,
+        }),
+      });
+      if (!res.ok) {
+        const err = await res.text();
+        throw new Error(err || `HTTP ${res.status}`);
+      }
+      const blob = await res.blob();
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "cyno-output.mp4";
+      a.click();
+      URL.revokeObjectURL(a.href);
+      toast.success("Video ready", { id: t });
+    } catch (e) {
+      toast.error(`Render failed: ${(e as Error).message}`, { id: t });
+    } finally {
+      setRendering(false);
+    }
+  };
+
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Toaster richColors position="top-right" />
@@ -121,9 +178,14 @@ function App() {
                 onChange={(e) => { const f = e.target.files?.[0]; if (f) onUpload(f); }}
               />
             </label>
-            <Button size="sm" onClick={download}>
-              <Download className="size-4" /> Download
+            <Button size="sm" variant="outline" onClick={download}>
+              <Download className="size-4" /> Download .txt
             </Button>
+            <Button size="sm" onClick={render} disabled={rendering}>
+              {rendering ? <Loader2 className="size-4 animate-spin" /> : <Play className="size-4" />}
+              {rendering ? "Rendering…" : "Render video"}
+            </Button>
+
             <Sheet>
               <SheetTrigger asChild>
                 <Button size="sm" variant="outline" className="lg:hidden">

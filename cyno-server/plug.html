@@ -1,0 +1,365 @@
+<html lang="en"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Plug AI Generator - V21 (Canvas Fix)</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        /* --- FONTS --- */
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@1,900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+
+        body {
+            background-color: #111;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden; 
+        }
+
+        /* --- THE PHONE SCREEN --- */
+        .app-screen {
+            width: 375px;
+            height: 667px; 
+            background: linear-gradient(180deg, #c4dbfc 0%, #a7c7f8 100%);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            overflow: visible; 
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+
+        /* --- HEADER --- */
+        .app-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            padding-bottom: 5px; 
+            margin-top: 5px;
+            z-index: 10;
+        }
+
+        /* ICON BUTTONS */
+        .icon-btn {
+            width: 44px;
+            height: 44px;
+            background: rgba(0, 0, 0, 0.25); 
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            backdrop-filter: blur(4px);
+            transition: transform 0.1s;
+            flex-shrink: 0; 
+        }
+        .icon-btn svg {
+            width: 24px;
+            height: 24px;
+            stroke: #FF5A5F; 
+            stroke-width: 3.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            fill: none;
+        }
+
+        /* --- LOGO CANVAS CONTAINER --- */
+        .logo-container {
+            width: 200px; 
+            height: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: -2px; 
+        }
+
+        /* The canvas that holds the drawn logo */
+        #logo-canvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* --- CONTENT AREA --- */
+        .content-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 5px; 
+            padding-left: 20px;
+            padding-right: 20px;
+            padding-bottom: 30px; 
+        }
+
+        /* IMAGE UPLOAD AREA */
+        .image-container {
+            width: 335px;
+            height: 200px;
+            background-color: rgba(255, 255, 255, 0.5);
+            border: 2px dashed #8faecb;
+            border-radius: 18px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            position: relative;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+        .image-container:hover { border-color: #fff; }
+
+        .placeholder-content { display: flex; flex-direction: column; align-items: center; color: #6b7c93; pointer-events: none; }
+        .placeholder-icon { font-size: 40px; margin-bottom: 10px; }
+        .image-container img { width: 100%; height: auto; display: none; object-fit: contain; }
+        
+        .image-container.has-image {
+            width: auto;
+            height: auto;
+            max-width: 100%;
+            background-color: transparent;
+            border: none;
+        }
+        .image-container.has-image .placeholder-content { display: none; }
+        .image-container.has-image img { display: block; border-radius: 18px; box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
+
+        .helper-label {
+            color: #5e7d9b;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 25px;
+            letter-spacing: 0.3px;
+        }
+
+        /* --- INTERACTIVE BUBBLE --- */
+        .msg-bubble {
+            align-self: flex-end; 
+            width: fit-content;
+            max-width: 80%;
+            min-width: 60px;
+            padding: 12px 16px;
+            font-size: 16px;
+            line-height: 1.4;
+            border-radius: 18px 0 18px 18px;
+            position: relative;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            word-wrap: break-word;
+            cursor: text;
+            background-color: #007AFF; 
+            color: #fff;
+            outline: none;
+        }
+
+        .msg-bubble::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            right: -9px; 
+            width: 0;
+            height: 0;
+            border-bottom: 10px solid transparent; 
+            border-top: 0;
+            border-left: 10px solid #007AFF; 
+        }
+
+        .msg-bubble:empty::before {
+            content: "Type...";
+            color: rgba(255,255,255,0.7);
+        }
+
+        /* --- FLOATING BUTTONS --- */
+        .button-container {
+            position: fixed;
+            bottom: 30px;
+            display: flex;
+            gap: 15px;
+            z-index: 100;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 30px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1rem;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            transition: transform 0.2s;
+        }
+        .btn:hover { transform: scale(1.05); }
+
+        .save-btn { background: #fff; color: #000; }
+        .reset-btn { background: #ff3b30; color: #fff; } 
+
+        #hidden-file { display: none; }
+
+        /* Font Loader helper */
+        #font-check {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900;
+            font-style: italic;
+            position: absolute; 
+            opacity: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="font-check">.</div>
+
+    <div class="app-screen" id="capture-target">
+        
+        <div class="app-header">
+            <div class="icon-btn">
+                <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            </div>
+            
+            <div class="logo-container">
+                <canvas id="logo-canvas" width="520" height="160"></canvas>
+            </div>
+
+            <div class="icon-btn">
+                <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            </div>
+        </div>
+
+        <div class="content-area">
+            <div class="image-container" id="img-container" onclick="document.getElementById('hidden-file').click()">
+                <div class="placeholder-content">
+                    <div class="placeholder-icon">📷</div>
+                    <div>Click to upload picture</div>
+                </div>
+                <img id="preview-img">
+                <input type="file" id="hidden-file" accept="image/*" onchange="loadFile(this)">
+            </div>
+
+            <div class="helper-label">tap to copy</div>
+            <div class="msg-bubble" contenteditable="true" spellcheck="false"></div>
+        
+        </div>
+    </div>
+
+    <div class="button-container">
+        <button class="btn reset-btn" onclick="resetApp()">🔄 Reset</button>
+        <button class="btn save-btn" onclick="downloadHD()">📸 Save Image</button>
+    </div>
+
+    <script>
+        // --- LOGO DRAWING LOGIC ---
+        function drawLogo() {
+            const canvas = document.getElementById('logo-canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Set canvas resolution for HD sharpness
+            canvas.width = 520; // 2x the container size
+            canvas.height = 160;
+
+            // Wait for font to fully load
+            document.fonts.load('italic 900 100px "Montserrat"').then(() => {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Text Settings
+                ctx.font = 'italic 900 110px "Montserrat", sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                
+                // 1. Draw White Stroke (Background)
+                ctx.strokeStyle = 'white';
+                ctx.lineWidth = 30; // Thick outline
+                ctx.lineJoin = 'round';
+                ctx.miterLimit = 2;
+                ctx.strokeText("Plug AI", canvas.width / 2, canvas.height / 2);
+
+                // 2. Draw Red Fill (Foreground)
+                ctx.fillStyle = '#FF5A5F';
+                ctx.fillText("Plug AI", canvas.width / 2, canvas.height / 2);
+            });
+        }
+
+        // Run drawing on load and resize
+        window.onload = drawLogo;
+        
+        // --- APP LOGIC ---
+
+        function loadFile(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.getElementById('preview-img');
+                    const container = document.getElementById('img-container');
+                    img.src = e.target.result;
+                    container.classList.add('has-image');
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function resetApp() {
+            const img = document.getElementById('preview-img');
+            const container = document.getElementById('img-container');
+            const fileInput = document.getElementById('hidden-file');
+            img.src = "";
+            container.classList.remove('has-image');
+            fileInput.value = ""; 
+            const bubble = document.querySelector('.msg-bubble');
+            bubble.innerText = "";
+        }
+
+        function downloadHD() {
+            const element = document.getElementById('capture-target');
+            const btns = document.querySelector('.button-container');
+            const bubble = element.querySelector('.msg-bubble');
+
+            btns.style.display = 'none';
+            
+            // Redraw logo one last time to be sure
+            drawLogo();
+
+            setTimeout(() => {
+                // Calculate Dynamic Height
+                const containerRect = element.getBoundingClientRect();
+                const bubbleRect = bubble.getBoundingClientRect();
+                let calculatedHeight = (bubbleRect.bottom - containerRect.top) + 30;
+                calculatedHeight = Math.max(calculatedHeight, 300);
+
+                html2canvas(element, {
+                    scale: 4, 
+                    useCORS: true, 
+                    backgroundColor: null,
+                    logging: false,
+                    height: calculatedHeight,
+                    windowHeight: calculatedHeight,
+                    y: 0,
+                    onclone: (clonedDoc) => {
+                        const clonedElement = clonedDoc.getElementById('capture-target');
+                        clonedElement.style.height = "auto"; 
+                        clonedElement.style.display = 'flex';
+                        clonedElement.querySelector('.msg-bubble').blur(); 
+                    }
+                }).then(canvas => {
+                    const filename = `plug-ai-${Date.now()}.png`;
+                    const link = document.createElement('a');
+                    link.download = filename;
+                    link.href = canvas.toDataURL("image/png", 1.0);
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    btns.style.display = 'flex';
+                }).catch(err => {
+                    console.error(err);
+                    alert("Error saving image.");
+                    btns.style.display = 'flex';
+                });
+            }, 100);
+        }
+    </script>
+
+
+
+</body></html>
