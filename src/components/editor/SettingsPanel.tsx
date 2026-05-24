@@ -227,22 +227,26 @@ function CustomVoicesPanel({ settings, setSettings }: Props) {
 function SfxPanel({ settings, setSettings }: Props) {
   return (
     <Section title="SFX library">
-      <div className="flex flex-wrap gap-1">
-        {settings.sfxLibrary.map((s, i) => (
-          <span key={i} className="inline-flex items-center gap-1 rounded-full bg-secondary px-2 py-0.5 text-xs">
-            {s.name}
-            <button
-              onClick={() =>
-                setSettings({
-                  ...settings,
-                  sfxLibrary: settings.sfxLibrary.filter((_, j) => j !== i),
-                })
-              }
-              className="text-muted-foreground hover:text-destructive"
-            >×</button>
-          </span>
-        ))}
-      </div>
+      {settings.sfxLibrary.length > 0 ? (
+        <ul className="divide-y rounded border">
+          {settings.sfxLibrary.map((s, i) => (
+            <li key={i} className="flex items-center justify-between px-3 py-2 text-sm">
+              <span className="truncate">{s.name}</span>
+              <Button
+                size="icon" variant="ghost"
+                onClick={() =>
+                  setSettings({
+                    ...settings,
+                    sfxLibrary: settings.sfxLibrary.filter((_, j) => j !== i),
+                  })
+                }
+              ><Trash2 className="size-4" /></Button>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="text-xs text-muted-foreground">No SFX uploaded yet.</p>
+      )}
       <label className="inline-flex cursor-pointer items-center gap-2 rounded border border-dashed px-3 py-2 text-sm hover:bg-accent/40">
         <Plus className="size-4" /> Upload SFX (mp3/wav)
         <input
@@ -260,6 +264,7 @@ function SfxPanel({ settings, setSettings }: Props) {
     </Section>
   );
 }
+
 function fileToDataUrl(f: File): Promise<string> {
   return new Promise((res, rej) => {
     const r = new FileReader();
