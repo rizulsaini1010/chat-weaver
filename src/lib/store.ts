@@ -25,6 +25,9 @@ export const defaultSettings: Settings = {
   defaultThemVoice: "",
   customVoices: [],
   sfxLibrary: [],
+};
+
+
 
 
 interface State {
