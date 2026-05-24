@@ -9,8 +9,9 @@ import {
   Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger,
 } from "@/components/ui/sheet";
 import {
-  Download, FileCode, MessageSquare, Settings as SettingsIcon, Upload,
+  Download, FileCode, Loader2, MessageSquare, Play, Settings as SettingsIcon, Upload,
 } from "lucide-react";
+
 import {
   defaultSettings, loadState, saveState,
 } from "@/lib/store";
