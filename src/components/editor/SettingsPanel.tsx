@@ -44,40 +44,8 @@ export function SettingsPanel({ settings, setSettings }: Props) {
             </SelectContent>
           </Select>
         </Row>
-        <Row label="Bubble color">
-          <div className="flex items-center gap-2">
-            <button
-              className="size-7 rounded-full border ring-2 ring-offset-2"
-              style={{ background: "oklch(0.66 0.18 255)", boxShadow: settings.useGreenBubbles ? "none" : "0 0 0 2px var(--ring)" }}
-              onClick={() => update("useGreenBubbles", false)}
-            />
-            <button
-              className="size-7 rounded-full border"
-              style={{ background: "oklch(0.75 0.18 150)", boxShadow: settings.useGreenBubbles ? "0 0 0 2px var(--ring)" : "none" }}
-              onClick={() => update("useGreenBubbles", true)}
-            />
-            <span className="text-xs text-muted-foreground">
-              {settings.useGreenBubbles ? "Green (SMS)" : "Blue (iMessage)"}
-            </span>
-          </div>
-        </Row>
-        <Row label="Background color">
-          <div className="flex items-center gap-2">
-            <input
-              type="color"
-              value={settings.bgColor}
-              onChange={(e) => update("bgColor", e.target.value)}
-              className="size-9 cursor-pointer rounded border bg-transparent"
-            />
-            <Input
-              value={settings.bgColor}
-              onChange={(e) => update("bgColor", e.target.value)}
-              placeholder="#00ff00 or rgb(...)"
-              className="h-9"
-            />
-          </div>
-        </Row>
         <Slid label={`Corner radius (${settings.cornerRadius}px)`} v={settings.cornerRadius} min={0} max={120} onChange={(n) => update("cornerRadius", n)} />
+
         <Slid label={`Bubble font size (${settings.bubbleFontSize}px)`} v={settings.bubbleFontSize} min={20} max={80} onChange={(n) => update("bubbleFontSize", n)} />
         <Slid label={`Bottom reserve (${settings.bottomReserveRatio.toFixed(2)})`} v={settings.bottomReserveRatio} min={0} max={0.6} step={0.01} onChange={(n) => update("bottomReserveRatio", n)} />
         <Row label="Reveal animation">
@@ -259,22 +227,26 @@ function CustomVoicesPanel({ settings, setSettings }: Props) {
 function SfxPanel({ settings, setSettings }: Props) {
   return (
     <Section title="SFX library">
-      <div className="flex flex-wrap gap-1">
-        {settings.sfxLibrary.map((s, i) => (
-          <span key={i} className="inline-flex items-center gap-1 rounded-full bg-secondary px-2 py-0.5 text-xs">
-            {s.name}
-            <button
-              onClick={() =>
-                setSettings({
-                  ...settings,
-                  sfxLibrary: settings.sfxLibrary.filter((_, j) => j !== i),
-                })
-              }
-              className="text-muted-foreground hover:text-destructive"
-            >×</button>
-          </span>
-        ))}
-      </div>
+      {settings.sfxLibrary.length > 0 ? (
+        <ul className="divide-y rounded border">
+          {settings.sfxLibrary.map((s, i) => (
+            <li key={i} className="flex items-center justify-between px-3 py-2 text-sm">
+              <span className="truncate">{s.name}</span>
+              <Button
+                size="icon" variant="ghost"
+                onClick={() =>
+                  setSettings({
+                    ...settings,
+                    sfxLibrary: settings.sfxLibrary.filter((_, j) => j !== i),
+                  })
+                }
+              ><Trash2 className="size-4" /></Button>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="text-xs text-muted-foreground">No SFX uploaded yet.</p>
+      )}
       <label className="inline-flex cursor-pointer items-center gap-2 rounded border border-dashed px-3 py-2 text-sm hover:bg-accent/40">
         <Plus className="size-4" /> Upload SFX (mp3/wav)
         <input
@@ -292,6 +264,7 @@ function SfxPanel({ settings, setSettings }: Props) {
     </Section>
   );
 }
+
 function fileToDataUrl(f: File): Promise<string> {
   return new Promise((res, rej) => {
     const r = new FileReader();

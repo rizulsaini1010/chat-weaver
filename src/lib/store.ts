@@ -24,14 +24,11 @@ export const defaultSettings: Settings = {
   defaultMeVoice: "",
   defaultThemVoice: "",
   customVoices: [],
-  sfxLibrary: [
-    { name: "notification" },
-    { name: "sent" },
-    { name: "received" },
-    { name: "swoosh" },
-    { name: "pop" },
-  ],
+  sfxLibrary: [],
 };
+
+
+
 
 interface State {
   contacts: Contact[];
