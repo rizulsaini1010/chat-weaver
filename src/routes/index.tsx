@@ -178,9 +178,14 @@ function App() {
                 onChange={(e) => { const f = e.target.files?.[0]; if (f) onUpload(f); }}
               />
             </label>
-            <Button size="sm" onClick={download}>
-              <Download className="size-4" /> Download
+            <Button size="sm" variant="outline" onClick={download}>
+              <Download className="size-4" /> Download .txt
             </Button>
+            <Button size="sm" onClick={render} disabled={rendering}>
+              {rendering ? <Loader2 className="size-4 animate-spin" /> : <Play className="size-4" />}
+              {rendering ? "Rendering…" : "Render video"}
+            </Button>
+
             <Sheet>
               <SheetTrigger asChild>
                 <Button size="sm" variant="outline" className="lg:hidden">
