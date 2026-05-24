@@ -38,6 +38,8 @@ function App() {
   const [activeId, setActiveId] = useState<string>("");
   const [rawDirty, setRawDirty] = useState(false);
   const [rawText, setRawText] = useState("");
+  const [rendering, setRendering] = useState(false);
+
 
   // load
   useEffect(() => {
