@@ -252,6 +252,16 @@ function App() {
         {/* Center: editor */}
         <section className="flex flex-col gap-4 min-w-0">
           <Warnings contacts={contacts} settings={settings} />
+          {rendering ? (
+            <div className="rounded-lg border bg-card p-3 space-y-2">
+              <div className="flex items-center justify-between text-xs">
+                <span className="font-medium">{progressStage || "Rendering…"}</span>
+                <span className="text-muted-foreground tabular-nums">{progress}/100</span>
+              </div>
+              <Progress value={progress} />
+            </div>
+          ) : null}
+
           <Tabs defaultValue="visual">
             <TabsList>
               <TabsTrigger value="visual"><MessageSquare className="size-4" /> Visual</TabsTrigger>
