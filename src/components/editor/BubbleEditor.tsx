@@ -172,6 +172,9 @@ function SortableBubble({
 
           {b.kind === "image" ? (
             <div className="flex items-center gap-2">
+              {b.imageData ? (
+                <img src={b.imageData} alt="" className="size-12 rounded object-cover" />
+              ) : null}
               <Input
                 value={b.imageName ?? ""}
                 onChange={(e) => update({ imageName: e.target.value })}
@@ -182,12 +185,16 @@ function SortableBubble({
                 <input type="file" accept="image/*" className="hidden"
                   onChange={(e) => {
                     const f = e.target.files?.[0];
-                    if (f) update({ imageName: f.name });
+                    if (!f) return;
+                    const r = new FileReader();
+                    r.onload = () => update({ imageName: f.name, imageData: r.result as string });
+                    r.readAsDataURL(f);
                   }}
                 />
               </label>
             </div>
           ) : null}
+
 
           {b.kind === "break" ? (
             <div className="flex items-center gap-2">
