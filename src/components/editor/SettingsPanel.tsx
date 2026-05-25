@@ -44,7 +44,8 @@ export function SettingsPanel({ settings, setSettings }: Props) {
             </SelectContent>
           </Select>
         </Row>
-        <Slid label={`Corner radius (${settings.cornerRadius}px)`} v={settings.cornerRadius} min={0} max={120} onChange={(n) => update("cornerRadius", n)} />
+
+
 
         <Slid label={`Bubble font size (${settings.bubbleFontSize}px)`} v={settings.bubbleFontSize} min={20} max={80} onChange={(n) => update("bubbleFontSize", n)} />
         <Slid label={`Bottom reserve (${settings.bottomReserveRatio.toFixed(2)})`} v={settings.bottomReserveRatio} min={0} max={0.6} step={0.01} onChange={(n) => update("bottomReserveRatio", n)} />
