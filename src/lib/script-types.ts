@@ -17,6 +17,7 @@ export interface Bubble {
   text?: string;
   ttsOverride?: string; // what TTS speaks if different
   imageName?: string; // filename ref
+  imageData?: string; // data url for uploaded image
   breakSeconds?: number;
   sfx?: string; // sfx name or "" / none
   // promo
@@ -29,6 +30,7 @@ export interface Bubble {
 
 export interface Contact {
   id: string;
+  avatarData?: string;
   name: string;
   avatar?: string; // file name
   unread?: number;

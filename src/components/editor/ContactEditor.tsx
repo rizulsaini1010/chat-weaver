@@ -96,7 +96,9 @@ export function ContactHeaderEditor({
         </div>
         <div className="sm:col-span-2 flex items-center gap-3">
           <div className="size-12 rounded-full bg-secondary flex items-center justify-center overflow-hidden">
-            {contact.avatar ? (
+            {contact.avatarData ? (
+              <img src={contact.avatarData} alt="" className="size-12 object-cover" />
+            ) : contact.avatar ? (
               <span className="text-[10px] p-1 text-muted-foreground text-center">{contact.avatar}</span>
             ) : (
               <UserCircle2 className="size-8 text-muted-foreground" />
@@ -107,16 +109,20 @@ export function ContactHeaderEditor({
             <input type="file" accept="image/*" className="hidden"
               onChange={(e) => {
                 const f = e.target.files?.[0];
-                if (f) setContact({ ...contact, avatar: f.name });
+                if (!f) return;
+                const r = new FileReader();
+                r.onload = () => setContact({ ...contact, avatar: f.name, avatarData: r.result as string });
+                r.readAsDataURL(f);
               }}
             />
           </label>
-          {contact.avatar ? (
-            <Button variant="ghost" size="sm" onClick={() => setContact({ ...contact, avatar: undefined })}>
+          {contact.avatar || contact.avatarData ? (
+            <Button variant="ghost" size="sm" onClick={() => setContact({ ...contact, avatar: undefined, avatarData: undefined })}>
               Remove
             </Button>
           ) : null}
         </div>
+
       </div>
     </Card>
   );
