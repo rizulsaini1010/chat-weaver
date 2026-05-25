@@ -5,9 +5,14 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
+import { Progress } from "@/components/ui/progress";
 import {
   Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger,
 } from "@/components/ui/sheet";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import {
   Download, FileCode, Loader2, MessageSquare, Play, Settings as SettingsIcon, Upload,
 } from "lucide-react";
@@ -20,7 +25,8 @@ import { newContact, parseScript, serializeScript } from "@/lib/script-parser";
 import { ContactList, ContactHeaderEditor } from "@/components/editor/ContactEditor";
 import { BubbleEditor } from "@/components/editor/BubbleEditor";
 import { SettingsPanel } from "@/components/editor/SettingsPanel";
-import { Warnings } from "@/components/editor/Warnings";
+import { Warnings, computeIssues } from "@/components/editor/Warnings";
+
 
 export const Route = createFileRoute("/")({
   component: App,
