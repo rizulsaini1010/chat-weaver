@@ -222,10 +222,11 @@ function App() {
             <Button size="sm" variant="outline" onClick={download}>
               <Download className="size-4" /> Download .txt
             </Button>
-            <Button size="sm" onClick={render} disabled={rendering}>
+            <Button size="sm" onClick={startRender} disabled={rendering}>
               {rendering ? <Loader2 className="size-4 animate-spin" /> : <Play className="size-4" />}
-              {rendering ? "Rendering…" : "Render video"}
+              {rendering ? `Rendering ${progress}/100` : "Render video"}
             </Button>
+
 
             <Sheet>
               <SheetTrigger asChild>
