@@ -301,6 +301,26 @@ function App() {
           <SettingsPanel settings={settings} setSettings={setSettings} />
         </aside>
       </main>
+
+      <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Render with warnings?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Your script has {computeIssues(contacts, settings).length} unresolved warning(s) —
+              missing images, SFX files, or voice IDs. The render will likely fail or skip those parts.
+              Continue anyway?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Fix first</AlertDialogCancel>
+            <AlertDialogAction onClick={() => { setConfirmOpen(false); void doRender(); }}>
+              Render anyway
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
+
