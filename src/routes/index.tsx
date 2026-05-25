@@ -119,10 +119,12 @@ function App() {
   const collectAssets = (): Record<string, string> => {
     const out: Record<string, string> = {};
     for (const c of contacts) {
-      if (c.avatar && c.avatar.startsWith("data:")) out[`${c.id}_avatar`] = c.avatar;
+      if (c.avatarData?.startsWith("data:") && c.avatar) {
+        out[c.avatar] = c.avatarData;
+      }
       for (const b of c.bubbles) {
-        if (b.imageName && (b as unknown as { imageData?: string }).imageData?.startsWith("data:")) {
-          out[b.imageName] = (b as unknown as { imageData: string }).imageData;
+        if (b.kind === "image" && b.imageName && b.imageData?.startsWith("data:")) {
+          out[b.imageName] = b.imageData;
         }
       }
     }
@@ -132,15 +134,26 @@ function App() {
     return out;
   };
 
-  const render = async () => {
+  const startRender = () => {
+    const issues = computeIssues(contacts, settings);
+    if (issues.length > 0) {
+      setConfirmOpen(true);
+      return;
+    }
+    void doRender();
+  };
+
+  const doRender = async () => {
     if (rendering) return;
     const url = (settings.backendUrl || "").replace(/\/$/, "");
     if (!url) { toast.error("Set the render backend URL in Settings"); return; }
     setRendering(true);
+    setProgress(0);
+    setProgressStage("Submitting…");
     const t = toast.loading("Rendering video — this can take a while…");
     try {
       const apiKey = settings.ttsProvider === "elevenlabs" ? settings.elevenlabsApiKey : settings.ai33proApiKey;
-      const res = await fetch(`${url}/render`, {
+      const submit = await fetch(`${url}/render`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -151,16 +164,32 @@ function App() {
           ttsProvider: settings.ttsProvider,
         }),
       });
-      if (!res.ok) {
-        const err = await res.text();
-        throw new Error(err || `HTTP ${res.status}`);
+      if (!submit.ok) throw new Error((await submit.text()) || `HTTP ${submit.status}`);
+      const { jobId } = (await submit.json()) as { jobId: string };
+      if (!jobId) throw new Error("Backend did not return jobId");
+
+      // Poll progress
+      let done = false;
+      while (!done) {
+        await new Promise((r) => setTimeout(r, 1000));
+        const pr = await fetch(`${url}/progress/${jobId}`);
+        if (!pr.ok) throw new Error(`Progress HTTP ${pr.status}`);
+        const data = (await pr.json()) as { progress: number; stage: string; status: string; error?: string };
+        setProgress(Math.min(99, Math.round(data.progress)));
+        setProgressStage(data.stage || data.status);
+        if (data.status === "error") throw new Error(data.error || "render error");
+        if (data.status === "done") done = true;
       }
+      // Fetch result
+      const res = await fetch(`${url}/result/${jobId}`);
+      if (!res.ok) throw new Error(await res.text());
       const blob = await res.blob();
       const a = document.createElement("a");
       a.href = URL.createObjectURL(blob);
       a.download = "cyno-output.mp4";
       a.click();
       URL.revokeObjectURL(a.href);
+      setProgress(100);
       toast.success("Video ready", { id: t });
     } catch (e) {
       toast.error(`Render failed: ${(e as Error).message}`, { id: t });
@@ -168,6 +197,8 @@ function App() {
       setRendering(false);
     }
   };
+
+
 
 
   return (
