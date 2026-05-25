@@ -45,6 +45,10 @@ function App() {
   const [rawDirty, setRawDirty] = useState(false);
   const [rawText, setRawText] = useState("");
   const [rendering, setRendering] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [progressStage, setProgressStage] = useState("");
+  const [confirmOpen, setConfirmOpen] = useState(false);
+
 
 
   // load
