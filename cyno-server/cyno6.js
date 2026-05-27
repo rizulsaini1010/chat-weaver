@@ -1825,10 +1825,12 @@ async function genMinimaxAudio(apiKey, text, outPath, speaker) {
     return;
   }
 
+  // Minimax is exposed via the AI33Pro gateway -> always prefer the AI33Pro key
+  const mxKey = process.env.AI33PRO_API_KEY || apiKey;
   const voiceId = getMinimaxVoiceId(speaker);
   console.log(`[MINIMAX TTS] speaker='${speaker}' voice_id='${voiceId}' text='${text.slice(0, 60)}'`);
   const url = "https://api.ai33.pro/v1m/task/text-to-speech";
-  const headers = { "Content-Type": "application/json", "xi-api-key": apiKey };
+  const headers = { "Content-Type": "application/json", "xi-api-key": mxKey };
   const payload = {
     text,
     model: "speech-2.8-turbo",
