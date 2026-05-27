@@ -270,28 +270,34 @@ function App() {
                 {scan.speakers.map((sp) => {
                   const presetMatch = voices.find((v) => v.name.toLowerCase() === sp.toLowerCase());
                   const current = voiceMap[sp] || (presetMatch?.id ?? "");
+                  const mx = isMinimaxSpeaker(sp);
                   return (
                     <div key={sp} className="grid grid-cols-[110px_1fr] items-center gap-2">
-                      <Label className="truncate text-xs font-medium" title={sp}>{sp}</Label>
+                      <Label className="truncate text-xs font-medium" title={sp}>
+                        {sp}
+                        {mx ? <span className="ml-1 text-[9px] text-primary">MiniMax</span> : null}
+                      </Label>
                       <div className="flex gap-1">
-                        <Select
-                          value={voices.find((v) => v.id === current)?.id ?? "__custom"}
-                          onValueChange={(v) => {
-                            if (v === "__custom") return;
-                            setVoiceMap({ ...voiceMap, [sp]: v });
-                          }}
-                        >
-                          <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Preset" /></SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="__custom">— custom ID —</SelectItem>
-                            {voices.map((v) => (
-                              <SelectItem key={v.id} value={v.id}>{v.name}</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                        {mx ? null : (
+                          <Select
+                            value={voices.find((v) => v.id === current)?.id ?? "__custom"}
+                            onValueChange={(v) => {
+                              if (v === "__custom") return;
+                              setVoiceMap({ ...voiceMap, [sp]: v });
+                            }}
+                          >
+                            <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Preset" /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="__custom">— custom ID —</SelectItem>
+                              {voices.map((v) => (
+                                <SelectItem key={v.id} value={v.id}>{v.name}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        )}
                         <Input
                           className="h-8 text-xs font-mono"
-                          placeholder="voice id"
+                          placeholder={mx ? "minimax voice id (numeric)" : "voice id"}
                           value={voiceMap[sp] ?? ""}
                           onChange={(e) => setVoiceMap({ ...voiceMap, [sp]: e.target.value })}
                         />
