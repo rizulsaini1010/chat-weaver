@@ -91,7 +91,9 @@ async function runJob(jobId, payload) {
   const job = jobs.get(jobId);
   const detach = attachProgressListener(jobId);
   try {
-    const { script, settings = {}, assets = {}, apiKey = "", ttsProvider = "elevenlabs" } = payload;
+    const { script, settings = {}, assets = {}, apiKey = "", minimaxApiKey = "", ttsProvider = "elevenlabs" } = payload;
+    if (minimaxApiKey) process.env.AI33PRO_API_KEY = minimaxApiKey;
+    else if (ttsProvider === "ai33pro" && apiKey) process.env.AI33PRO_API_KEY = apiKey;
     if (!script || typeof script !== "string") throw new Error("Missing 'script' string");
 
     const workDir = await fsp.mkdtemp(path.join(os.tmpdir(), "cyno-job-"));

@@ -78,7 +78,7 @@ function App() {
   const knownVoiceNames = new Set(voices.map((v) => v.name.toLowerCase()));
 
   const missingVoices = scan.speakers.filter(
-    (s) => !voiceMap[s] && !knownVoiceNames.has(s.toLowerCase()) && !looksLikeId(s),
+    (s) => !isMinimaxSpeaker(s) && !voiceMap[s] && !knownVoiceNames.has(s.toLowerCase()) && !looksLikeId(s),
   );
   const missingImages = scan.images.filter((n) => !imageFiles[n]);
   const missingSfx = scan.sfx.filter((n) => !sfxFiles[n]);
@@ -120,6 +120,7 @@ function App() {
           assets,
           voiceMap,
           apiKey,
+          minimaxApiKey: settings.ai33proApiKey || "",
           ttsProvider: settings.ttsProvider,
         }),
       });
@@ -421,6 +422,7 @@ function WarningCard({ text }: { text: string }) {
   );
 }
 function looksLikeId(s: string) { return /^[A-Za-z0-9_-]{12,}$/.test(s); }
+function isMinimaxSpeaker(s: string) { const v = s.trim().toLowerCase(); return v.startsWith("mx_") || v.startsWith("mx:"); }
 function plural(n: number) { return n === 1 ? "" : "s"; }
 function toDataUrl(f: File): Promise<string> {
   return new Promise((res, rej) => {

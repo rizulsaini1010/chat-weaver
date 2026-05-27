@@ -1475,7 +1475,7 @@ async function createSceneImage(
   cctx.fillRect(0, 0, chatImg.width, chatImg.height);
   if (showPoster && posterImg) cctx.drawImage(posterImg, 0, 0);
 
-  let y = showPoster ? TOPBAR_H + Math.trunc(13 * 1.5) : Math.trunc(14 * 1.5);
+  let y = showPoster ? TOPBAR_H + Math.trunc(13 * 1.5) : Math.trunc(28 * 1.5);
   for (let gapIdx = 0; gapIdx < visible.length; gapIdx += 1) {
     const vi = visible[gapIdx];
     const bubble = bubbleImgs[vi];
@@ -1825,10 +1825,12 @@ async function genMinimaxAudio(apiKey, text, outPath, speaker) {
     return;
   }
 
+  // Minimax is exposed via the AI33Pro gateway -> always prefer the AI33Pro key
+  const mxKey = process.env.AI33PRO_API_KEY || apiKey;
   const voiceId = getMinimaxVoiceId(speaker);
   console.log(`[MINIMAX TTS] speaker='${speaker}' voice_id='${voiceId}' text='${text.slice(0, 60)}'`);
   const url = "https://api.ai33.pro/v1m/task/text-to-speech";
-  const headers = { "Content-Type": "application/json", "xi-api-key": apiKey };
+  const headers = { "Content-Type": "application/json", "xi-api-key": mxKey };
   const payload = {
     text,
     model: "speech-2.8-turbo",

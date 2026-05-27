@@ -65,20 +65,26 @@ function collectSfx(text: string, into: Set<string>) {
 
 // Rewrite the script so each known speaker name is replaced by its voice id.
 export function applyVoiceMap(raw: string, voiceMap: Record<string, string>): string {
-  if (!Object.keys(voiceMap).length) return raw;
+  const isMx = (n: string) => {
+    const v = n.trim().toLowerCase();
+    return v.startsWith("mx_") || v.startsWith("mx:");
+  };
   return raw
     .split(/\r?\n/)
     .map((rawLine) => {
       const line = rawLine;
-      // Speaker>side:  or  plug>Speaker:
       let m = line.match(/^(\s*)(plugsay|rizzsay|plug|rizz|rizzy)>([^:]+):(.*)$/i);
       if (m) {
-        const id = voiceMap[m[3].trim()];
+        const name = m[3].trim();
+        if (isMx(name)) return line;
+        const id = voiceMap[name];
         return id ? `${m[1]}${m[2]}>${id}:${m[4]}` : line;
       }
       m = line.match(/^(\s*)([^>:#]+)>(me|them|audio):(.*)$/i);
       if (m) {
-        const id = voiceMap[m[2].trim()];
+        const name = m[2].trim();
+        if (isMx(name)) return line;
+        const id = voiceMap[name];
         return id ? `${m[1]}${id}>${m[3]}:${m[4]}` : line;
       }
       return line;
