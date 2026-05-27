@@ -78,7 +78,7 @@ function App() {
   const knownVoiceNames = new Set(voices.map((v) => v.name.toLowerCase()));
 
   const missingVoices = scan.speakers.filter(
-    (s) => !voiceMap[s] && !knownVoiceNames.has(s.toLowerCase()) && !looksLikeId(s),
+    (s) => !isMinimaxSpeaker(s) && !voiceMap[s] && !knownVoiceNames.has(s.toLowerCase()) && !looksLikeId(s),
   );
   const missingImages = scan.images.filter((n) => !imageFiles[n]);
   const missingSfx = scan.sfx.filter((n) => !sfxFiles[n]);
