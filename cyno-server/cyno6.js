@@ -857,8 +857,8 @@ async function bubbleImg(text, sender, width = 650, fontSize = 48, showTail = tr
   const bubbleFontWeight = "400";
   const font = fontSpec(fontSize, bubbleFontWeight);
   const padX = Math.trunc(24 * 1.5);
-  const padTop = Math.trunc(10 * 1.5);
-  const padBottom = Math.trunc(10 * 1.5);
+  const padTop = Math.trunc(16 * 1.5);
+  const padBottom = Math.trunc(14 * 1.5);
   const maxTextWidth = width - padX * 2 - Math.trunc(30 * 1.5);
   const displayTextNoBlur = stripBlurMarkers(text);
 
