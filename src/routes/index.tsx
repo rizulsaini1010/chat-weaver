@@ -77,9 +77,15 @@ function App() {
 
   const knownVoiceNames = new Set(voices.map((v) => v.name.toLowerCase()));
 
-  const missingVoices = scan.speakers.filter(
-    (s) => !isMinimaxSpeaker(s) && !voiceMap[s] && !knownVoiceNames.has(s.toLowerCase()) && !looksLikeId(s),
-  );
+  const missingVoices = scan.speakers.filter((s) => {
+    if (looksLikeId(s)) return false;
+    const hasMapped = !!(voiceMap[s] && voiceMap[s].trim());
+    if (isMinimaxSpeaker(s)) {
+      // MiniMax speakers REQUIRE a numeric voice clone ID — no preset fallback
+      return !hasMapped;
+    }
+    return !hasMapped && !knownVoiceNames.has(s.toLowerCase());
+  });
   const missingImages = scan.images.filter((n) => !imageFiles[n]);
   const missingSfx = scan.sfx.filter((n) => !sfxFiles[n]);
   const apiKeyMissing =
@@ -264,28 +270,34 @@ function App() {
                 {scan.speakers.map((sp) => {
                   const presetMatch = voices.find((v) => v.name.toLowerCase() === sp.toLowerCase());
                   const current = voiceMap[sp] || (presetMatch?.id ?? "");
+                  const mx = isMinimaxSpeaker(sp);
                   return (
                     <div key={sp} className="grid grid-cols-[110px_1fr] items-center gap-2">
-                      <Label className="truncate text-xs font-medium" title={sp}>{sp}</Label>
+                      <Label className="truncate text-xs font-medium" title={sp}>
+                        {sp}
+                        {mx ? <span className="ml-1 text-[9px] text-primary">MiniMax</span> : null}
+                      </Label>
                       <div className="flex gap-1">
-                        <Select
-                          value={voices.find((v) => v.id === current)?.id ?? "__custom"}
-                          onValueChange={(v) => {
-                            if (v === "__custom") return;
-                            setVoiceMap({ ...voiceMap, [sp]: v });
-                          }}
-                        >
-                          <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Preset" /></SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="__custom">— custom ID —</SelectItem>
-                            {voices.map((v) => (
-                              <SelectItem key={v.id} value={v.id}>{v.name}</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                        {mx ? null : (
+                          <Select
+                            value={voices.find((v) => v.id === current)?.id ?? "__custom"}
+                            onValueChange={(v) => {
+                              if (v === "__custom") return;
+                              setVoiceMap({ ...voiceMap, [sp]: v });
+                            }}
+                          >
+                            <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Preset" /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="__custom">— custom ID —</SelectItem>
+                              {voices.map((v) => (
+                                <SelectItem key={v.id} value={v.id}>{v.name}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        )}
                         <Input
                           className="h-8 text-xs font-mono"
-                          placeholder="voice id"
+                          placeholder={mx ? "minimax voice id (numeric)" : "voice id"}
                           value={voiceMap[sp] ?? ""}
                           onChange={(e) => setVoiceMap({ ...voiceMap, [sp]: e.target.value })}
                         />
@@ -304,9 +316,14 @@ function App() {
               <Empty text="No image references in script." />
             ) : (
               <ul className="flex flex-col gap-2">
-                {scan.images.map((name) => (
+                {scan.images.map((name) => {
+                  const isAvatar = scan.contactAvatars.includes(name);
+                  return (
                   <li key={name} className="flex items-center gap-2">
-                    <span className="flex-1 truncate text-xs font-mono">{name}</span>
+                    <span className="flex-1 truncate text-xs font-mono">
+                      {name}
+                      {isAvatar ? <span className="ml-1 text-[9px] text-primary">contact avatar</span> : null}
+                    </span>
                     {imageFiles[name] ? (
                       <img src={imageFiles[name]} alt={name} className="size-10 rounded object-cover border" />
                     ) : (
@@ -324,7 +341,8 @@ function App() {
                       />
                     </label>
                   </li>
-                ))}
+                  );
+                })}
               </ul>
             )}
           </Card>

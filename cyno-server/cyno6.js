@@ -857,8 +857,8 @@ async function bubbleImg(text, sender, width = 650, fontSize = 48, showTail = tr
   const bubbleFontWeight = "400";
   const font = fontSpec(fontSize, bubbleFontWeight);
   const padX = Math.trunc(24 * 1.5);
-  const padTop = Math.trunc(10 * 1.5);
-  const padBottom = Math.trunc(10 * 1.5);
+  const padTop = Math.trunc(16 * 1.5);
+  const padBottom = Math.trunc(14 * 1.5);
   const maxTextWidth = width - padX * 2 - Math.trunc(30 * 1.5);
   const displayTextNoBlur = stripBlurMarkers(text);
 
@@ -1475,7 +1475,7 @@ async function createSceneImage(
   cctx.fillRect(0, 0, chatImg.width, chatImg.height);
   if (showPoster && posterImg) cctx.drawImage(posterImg, 0, 0);
 
-  let y = showPoster ? TOPBAR_H + Math.trunc(13 * 1.5) : Math.trunc(28 * 1.5);
+  let y = showPoster ? TOPBAR_H + Math.trunc(24 * 1.5) : Math.trunc(36 * 1.5);
   for (let gapIdx = 0; gapIdx < visible.length; gapIdx += 1) {
     const vi = visible[gapIdx];
     const bubble = bubbleImgs[vi];
@@ -1709,7 +1709,7 @@ function parseFileSettingsAndThreads(filename) {
 
 async function getDynamicPageSize(msgs, start) {
   const chatY = Math.trunc(170 * 1.5);
-  const bubbleStartY = TOPBAR_H + Math.trunc(13 * 1.5);
+  const bubbleStartY = TOPBAR_H + Math.trunc(24 * 1.5);
   const bottomReserve = Math.trunc(H * BOTTOM_RESERVE_RATIO);
   const availableH = H - bottomReserve - chatY - bubbleStartY;
   let usedH = 0;
