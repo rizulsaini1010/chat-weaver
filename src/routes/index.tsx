@@ -120,6 +120,7 @@ function App() {
           assets,
           voiceMap,
           apiKey,
+          minimaxApiKey: settings.ai33proApiKey || "",
           ttsProvider: settings.ttsProvider,
         }),
       });
