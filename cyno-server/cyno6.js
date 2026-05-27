@@ -1475,7 +1475,7 @@ async function createSceneImage(
   cctx.fillRect(0, 0, chatImg.width, chatImg.height);
   if (showPoster && posterImg) cctx.drawImage(posterImg, 0, 0);
 
-  let y = showPoster ? TOPBAR_H + Math.trunc(13 * 1.5) : Math.trunc(28 * 1.5);
+  let y = showPoster ? TOPBAR_H + Math.trunc(24 * 1.5) : Math.trunc(36 * 1.5);
   for (let gapIdx = 0; gapIdx < visible.length; gapIdx += 1) {
     const vi = visible[gapIdx];
     const bubble = bubbleImgs[vi];
