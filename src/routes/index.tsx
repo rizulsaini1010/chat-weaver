@@ -77,9 +77,15 @@ function App() {
 
   const knownVoiceNames = new Set(voices.map((v) => v.name.toLowerCase()));
 
-  const missingVoices = scan.speakers.filter(
-    (s) => !isMinimaxSpeaker(s) && !voiceMap[s] && !knownVoiceNames.has(s.toLowerCase()) && !looksLikeId(s),
-  );
+  const missingVoices = scan.speakers.filter((s) => {
+    if (looksLikeId(s)) return false;
+    const hasMapped = !!(voiceMap[s] && voiceMap[s].trim());
+    if (isMinimaxSpeaker(s)) {
+      // MiniMax speakers REQUIRE a numeric voice clone ID — no preset fallback
+      return !hasMapped;
+    }
+    return !hasMapped && !knownVoiceNames.has(s.toLowerCase());
+  });
   const missingImages = scan.images.filter((n) => !imageFiles[n]);
   const missingSfx = scan.sfx.filter((n) => !sfxFiles[n]);
   const apiKeyMissing =
