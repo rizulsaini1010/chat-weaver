@@ -341,7 +341,8 @@ function App() {
                       />
                     </label>
                   </li>
-                ))}
+                  );
+                })}
               </ul>
             )}
           </Card>
