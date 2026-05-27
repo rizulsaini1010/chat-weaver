@@ -421,6 +421,7 @@ function WarningCard({ text }: { text: string }) {
   );
 }
 function looksLikeId(s: string) { return /^[A-Za-z0-9_-]{12,}$/.test(s); }
+function isMinimaxSpeaker(s: string) { const v = s.trim().toLowerCase(); return v.startsWith("mx_") || v.startsWith("mx:"); }
 function plural(n: number) { return n === 1 ? "" : "s"; }
 function toDataUrl(f: File): Promise<string> {
   return new Promise((res, rej) => {
