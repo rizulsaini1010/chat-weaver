@@ -316,9 +316,14 @@ function App() {
               <Empty text="No image references in script." />
             ) : (
               <ul className="flex flex-col gap-2">
-                {scan.images.map((name) => (
+                {scan.images.map((name) => {
+                  const isAvatar = scan.contactAvatars.includes(name);
+                  return (
                   <li key={name} className="flex items-center gap-2">
-                    <span className="flex-1 truncate text-xs font-mono">{name}</span>
+                    <span className="flex-1 truncate text-xs font-mono">
+                      {name}
+                      {isAvatar ? <span className="ml-1 text-[9px] text-primary">contact avatar</span> : null}
+                    </span>
                     {imageFiles[name] ? (
                       <img src={imageFiles[name]} alt={name} className="size-10 rounded object-cover border" />
                     ) : (
