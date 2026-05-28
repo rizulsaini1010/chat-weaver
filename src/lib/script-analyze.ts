@@ -86,9 +86,9 @@ const isMx = (n: string) => {
 export function applyVoiceMap(raw: string, voiceMap: Record<string, string>): string {
   const resolveMx = (name: string): string | null => {
     const id = voiceMap[name];
-    if (id && id.trim()) return `mx:${id.trim()}`;
-    // If user typed mx:<id> directly, leave it
-    if (name.toLowerCase().startsWith("mx:")) return name;
+    if (id && id.trim()) return `mx_${id.trim()}`;
+    // If user typed mx:<id> directly, normalize to mx_<id>
+    if (name.toLowerCase().startsWith("mx:")) return `mx_${name.slice(3).trim()}`;
     return null;
   };
 
