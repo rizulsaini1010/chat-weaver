@@ -1464,9 +1464,8 @@ async function createSceneImage(
   const bubblesH = visibleHeights.reduce((a, b) => a + b, 0) + gaps.reduce((a, b) => a + b, 0);
   const bottomPad = Math.max(Math.trunc(15 * 1.5), uiRound - 22);
   let chatH = showPoster
-    ? TOPBAR_H + Math.trunc(40 * 1.5) + bubblesH + Math.trunc(20 * 1.5)
-    : bubblesH + Math.trunc(48 * 1.5) + Math.trunc(20 * 1.5);
-  chatH = showPoster ? Math.max(chatH, TOPBAR_H) : bubblesH + bottomPad;
+    ? Math.max(TOPBAR_H + Math.trunc(40 * 1.5) + bubblesH + Math.trunc(20 * 1.5), TOPBAR_H)
+    : bubblesH + Math.max(bottomPad, Math.trunc(48 * 1.5));
 
   const chatX = Math.trunc((W - CHAT_W) / 2);
   const chatImg = createCanvas(CHAT_W, Math.trunc(chatH));
