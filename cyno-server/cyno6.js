@@ -1708,7 +1708,7 @@ function parseFileSettingsAndThreads(filename) {
 
 async function getDynamicPageSize(msgs, start) {
   const chatY = Math.trunc(170 * 1.5);
-  const bubbleStartY = TOPBAR_H + Math.trunc(24 * 1.5);
+  const bubbleStartY = TOPBAR_H + Math.trunc(40 * 1.5);
   const bottomReserve = Math.trunc(H * BOTTOM_RESERVE_RATIO);
   const availableH = H - bottomReserve - chatY - bubbleStartY;
   let usedH = 0;
