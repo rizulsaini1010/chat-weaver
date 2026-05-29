@@ -894,7 +894,12 @@ async function bubbleImg(text, sender, width = 650, fontSize = 48, showTail = tr
 
   const bubbleW = Math.trunc((textW2x + trailingEmojiPad) / scale) + padX * 2;
 
-  let bubbleH = Math.trunc(textH + padTop + padBottom + Math.trunc(5 * 1.5));
+  // Use 2x line count for height so bubble matches what we actually draw.
+  // (1x wrapping can yield fewer lines than 2x wrapping, which previously made
+  //  the bubble too short and pushed text above its top edge.)
+  const textH2xPx = mixedLines2x.length * lh; // in 2x units
+  const textHForHeight = Math.max(textH, Math.ceil(textH2xPx / scale));
+  let bubbleH = Math.trunc(textHForHeight + padTop + padBottom + Math.trunc(5 * 1.5));
   bubbleH = Math.max(bubbleH, Math.trunc(64 * 1.5));
 
   const imgW = bubbleW + Math.trunc(safeMargin / scale) + Math.trunc(5 * 1.5);
