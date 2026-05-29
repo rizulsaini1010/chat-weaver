@@ -507,8 +507,11 @@ async function renderSfTextBrowserRaster(text, font, fill, lineH) {
       const measureCtx = measureCanvas.getContext("2d");
       measureCtx.font = `${fontSize}px ${family}`;
       const metrics = measureCtx.measureText(content);
-      const ascent = metrics.actualBoundingBoxAscent || fontSize * 0.78;
-      const descent = metrics.actualBoundingBoxDescent || fontSize * 0.22;
+      // Browser canvas can under-report custom SF font bounds, which clips the
+      // top of uppercase text while emojis still look centered. Use conservative
+      // bounds so the raster has enough vertical room for the real glyphs.
+      const ascent = Math.max(metrics.actualBoundingBoxAscent || 0, fontSize * 0.92);
+      const descent = Math.max(metrics.actualBoundingBoxDescent || 0, fontSize * 0.24);
       const advance = Math.max(1, Math.ceil(metrics.width));
       const padX = 2;
       const width = Math.max(1, advance + padX * 2);
@@ -523,7 +526,7 @@ async function renderSfTextBrowserRaster(text, font, fill, lineH) {
       ctx.textBaseline = "alphabetic";
       ctx.textAlign = "left";
       ctx.imageSmoothingEnabled = true;
-      const y = (height + ascent - descent) / 2;
+      const y = Math.min(height - descent - 2, Math.max(ascent + 2, (height + ascent - descent) / 2));
       ctx.fillText(content, padX, y);
       return { dataUrl: canvas.toDataURL("image/png"), advance, padX };
     }, {
@@ -553,8 +556,9 @@ function lineHeight(font, lineSpacing) {
   const m = measureCtx.measureText("Ay");
   const ascent = m.actualBoundingBoxAscent ?? font.size * 0.78;
   const descent = m.actualBoundingBoxDescent ?? font.size * 0.22;
-  // Use tight glyph bounds only — matches Python's getbbox("Ay")[3] - getbbox("Ay")[1]
-  return Math.ceil(ascent + descent + lineSpacing);
+  // Keep enough vertical room for browser-rasterized SF text. Tight metrics can
+  // under-estimate all-caps strings, making text render too high/clipped inside bubbles.
+  return Math.ceil(Math.max(ascent + descent, font.size * 1.18) + lineSpacing);
 }
 
 function measureMixedLine(tokens, font, emojiSize) {
